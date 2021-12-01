@@ -4,7 +4,7 @@ const app = express();
 const router = express.Router();
 
 app.use(express.static(__dirname + "/public"));
-// bodyParser 미들웨어 사용 - POST 방식 전송에서 body의 데이터를 접근 가능해 진다.
+// bodyParser 미들웨어 사용 - POST 방식 전송에서 body의 데이터에 접근 가능해 진다.
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -105,6 +105,7 @@ router.route("/car_modify/:no").get((req, res) => {
     res.end(html);
   });
 });
+
 router.route("/car_modify/").post((req, res) => {
   // 수정된 정보가 반영 되도록 한다.
   var carData = {
