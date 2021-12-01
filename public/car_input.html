@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>자동차 정보 등록</title>
+</head>
+<body>
+  <h2>자동차 정보 등록</h2>
+  <form id="car_input" action="/car_input" method="post">
+    <table border="1" width="350">
+      <tr>
+        <th>차종</th>
+        <td><input type="text" name="name" value="S80"></td>
+      </tr>
+      <tr>
+        <th>가격</th>
+        <td><input type="text" name="price" value="6000"></td>
+      </tr>
+      <tr>
+        <th>제조사</th>
+        <td><input type="text" name="company" value="VOLVO"></td>
+      </tr>
+      <tr>
+        <th>연식</th>
+        <td><input type="text" name="year" value="2020"></td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <input type="submit" value="저장하기" />
+        </td>
+      </tr>
+    </table>
+  </form>
+  <script src="http://code.jquery.com/jquery.js"></script>
+  <script>
+    $('#car_input').on('submit', event => {
+      // Ajax를 이용한 데이터 전송방법도 있음
+    });
+  </script>
+</body>
+</html>
