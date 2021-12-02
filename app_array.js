@@ -5,7 +5,6 @@ const router = express.Router();
 
 const MongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
-const { isSetIterator } = require('util/types');
 
 let db = null;
 let dbUrl = 'mongodb://localhost';
@@ -90,7 +89,7 @@ const insert = (db, carData, callback) => {
   }
 }
 
-// 4. 전체 선택 기능 - callback은 익명함수의 참조
+// 4. 전체 선택 기능
 const selectAll = (db, callback) => {
   if (db) {
     const carRef = db.collection('car');
@@ -128,7 +127,6 @@ router.route("/").get((req, res) => {
   res.write("<h1>Hello Node.js Server</h1>");
   res.write("<h3>오신것을 환영합니다!</h3>");
   res.write("<p><a href='/main'>메인페이지로 이동</a></p>");
-  res.write("<p><a href='/car_list'>카 리스트로 이동</a></p>");
   res.end();
 });
 
@@ -140,81 +138,105 @@ router.route("/main").get((req, res) => {
   });
 });
 
+const car_list = [
+  { no: 1, name: "Sonata", price: 2500, company: "HYUNDAI", year: 2020 },
+  { no: 2, name: "Grandeur", price: 3500, company: "HYUNDAI", year: 2019 },
+  { no: 3, name: "BMW", price: 5500, company: "BMW", year: 2021 },
+];
+// no의 시퀀스 선언
+var noSequence = 4;
+
 router.route("/car_list").get((req, res) => {
   console.log("GET - /car_list");
-  selectAll(db, (err, car_list) => {
-    if (err) throw err;
-    var carData = { title: "Car List", car_list: car_list };
-    req.app.render("car_list", carData, (err, html) => {
-      res.end(html);
-    });
+  var carData = { title: "Car List", car_list: car_list };
+  req.app.render("car_list", carData, (err, html) => {
+    res.end(html);
   });
 });
 
 router.route("/car_input").post((req, res) => {
   console.log("GET - /car_input");
   var carData = {
+    no: noSequence++,
     name: req.body.name,
     price: req.body.price,
     company: req.body.company,
     year: req.body.year,
   };
-  insert(db, carData, (err, result) => {
-    if (err) throw err;
-    res.redirect("/car_list"); // 리스트 페이지로 전환(새로 고침)
-  });
+  // 전송된 데이터를 car_list에 저장 해야 한다.
+  // car_list페이지로 리다이렉트 해야한다.
+  car_list.push(carData);
+  res.redirect("/car_list"); // 리스트 페이지로 전환(새로 고침)
 });
 
-router.route("/car_detail/:objId").get((req, res) => {
+function findCarData(no) {
+  var no = Number(no);
+  var carData = null;
+  for (var i = 0; i < car_list.length; i++) {
+    if (car_list[i].no == no) {
+      carData = car_list[i];
+      break;
+    }
+  }
+  return carData;
+}
+
+function findIndex(no) {
+  var no = Number(no);
+  var idx = null;
+  for (var i = 0; i < car_list.length; i++) {
+    if (car_list[i].no == no) {
+      idx = i;
+      break;
+    }
+  }
+  return idx;
+}
+
+router.route("/car_detail/:no").get((req, res) => {
   console.log("GET - /car_detail");
-  selectOne(db, req.params.objId, (err, carData) => {
-    if (err) throw err;
-    console.log('carData => ', carData);
-    req.app.render("car_detail", { car: carData }, (err2, html) => {
-      if (err2) throw err2;
-      res.end(html);
-    });
+  //res.end("query no => " + req.query.no + " / params no => " + req.params.no);
+  // ejs view engine으로 보여지게 하기
+  var carData = findCarData(req.params.no);
+  req.app.render("car_detail", { car: carData }, (err, html) => {
+    res.end(html);
   });
 });
 
-router.route("/car_modify/:objId").get((req, res) => {
-  console.log("GET - /car_modify/:objId");
-  selectOne(db, req.params.objId, (err, carData) => {
-    console.log('carData => ', carData);
-    if (err) throw err;
-    req.app.render("car_modify", { car: carData }, (err2, html) => {
-      if (err2) throw err2;
-      res.end(html);
-    });
+router.route("/car_modify/:no").get((req, res) => {
+  console.log("GET - /car_modify/:no");
+  // car_modify.ejs 페이지로 포워드 되도록 한다.
+  var carData = findCarData(req.params.no);
+  req.app.render("car_modify", { car: carData }, (err, html) => {
+    res.end(html);
   });
 });
 
 router.route("/car_modify/").post((req, res) => {
   // 수정된 정보가 반영 되도록 한다.
   var carData = {
+    no: req.body.no,
     name: req.body.name,
     price: req.body.price,
     company: req.body.company,
     year: req.body.year,
   };
-  // console.log(req.body.objId);
-  const objId = req.body.objId;
+  var idx = findIndex(req.body.no);
+  car_list[idx] = carData;
 
-  update(db, carData, req.body.objId, (err, result) => {
-    if (err) throw err;
-    console.log("======>", objId);
-    res.redirect("car_detail/" + objId);
-  });
+  // 목록 페이지로 갱신
+  //res.redirect("/car_list");
+  res.redirect("car_detail/" + req.body.no);
 });
 
 
 // car_delete
-router.route("/car_delete/:objId").get((req, res) => {
-  console.log("GET - /car_delete/ => " + req.params.objId);
-  deleteDoc(db, req.params.objId, (err, result) => {
-    if (err) throw err;
-    res.redirect('/car_list');
-  });
+router.route("/car_delete/:id").get((req, res) => {
+  console.log("GET - /car_delete/ => " + req.params.id);
+  // console.log(req.params.id);
+  let index = findIndex(req.params.id);
+  car_List = car_list.splice(index, 1);
+  res.redirect('/car_list');
 });
 
 

@@ -11,7 +11,7 @@
   <table border="1" width="400">
     <tr>
       <th>NO</th>
-      <td><%=car.no%></td>
+      <td><%=car._id%></td>
     </tr>
     <tr>
       <th>NAME</th>
@@ -26,6 +26,6 @@
       <td><%=car.year%></td>
     </tr>
   </table>
-  <a href="/car_modify/<%=car.no%>">수정</a> | <a href="/car_delete/<%=car.no%>">삭제</a> | <a href="/car_list">목록</a>
+  <a href="/car_modify/<%=car._id%>">수정</a> | <a href="/car_delete/<%=car._id%>">삭제</a> | <a href="/car_list">목록</a>
 </body>
 </html>

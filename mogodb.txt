@@ -1,0 +1,84 @@
+db.car.save({name:'SM5', price: 1000, company:'SAMSUNG', year:2013})
+db.car.save({name:'SONATA', price: 2000, company:'HYUNDAI', year:2019})
+db.car.save({name:'BMW', price: 3000, company:'BMW', year:2017})
+db.car.save({name:'K7', price: 3000, company:'KIA', year:2020})
+
+db.car.find().pretty();
+
+db.car.find({ name: 'K7' });
+
+> db.car.find({ name: 'K7' },{_id:false});
+> { "name" : "K7", "price" : 3000, "company" : "KIA", "year" : 2020 }
+> db.car.find({ name: 'K7' },{_id:false, name:false});
+> { "price" : 3000, "company" : "KIA", "year" : 2020 }
+> db.car.find({ name: 'K7' },{_id:false, name:false,price:false});
+> { "company" : "KIA", "year" : 2020 }
+
+> db.car.find({price:2000},{_id:false});
+> { "name" : "SONATA", "price" : 2000, "company" : "HYUNDAI", "year" : 2019 }
+
+> db.car.find({price:{$gte:2000}},{_id:false});
+> { "name" : "SONATA", "price" : 2000, "company" : "HYUNDAI", "year" : 2019 }
+> { "name" : "BMW", "price" : 3000, "company" : "BMW", "year" : 2017 }
+> { "name" : "K7", "price" : 3000, "company" : "KIA", "year" : 2020 }
+
+> db.car.find({price:{$gt:2000}},{_id:false});
+> { "name" : "BMW", "price" : 3000, "company" : "BMW", "year" : 2017 }
+> { "name" : "K7", "price" : 3000, "company" : "KIA", "year" : 2020 }
+
+> db.car.find({price:{$lte:2000}},{_id:false});
+> { "name" : "SM5", "price" : 1000, "company" : "SAMSUNG", "year" : 2013 }
+> { "name" : "SONATA", "price" : 2000, "company" : "HYUNDAI", "year" : 2019 }
+
+> db.car.find({price:{$gte:2000}},{_id:false}).count();
+> 3
+
+> db.car.findOne();
+> {
+> "_id" : ObjectId("61a81bf164c0f24bc9bbaba9"),
+> "name" : "SM5",
+> "price" : 1000,
+> "company" : "SAMSUNG",
+> "year" : 2013
+> }
+
+> db.car.findOne({price:{$gte:2000}});
+> {
+> "_id" : ObjectId("61a81c5d64c0f24bc9bbabaa"),
+> "name" : "SONATA",
+> "price" : 2000,
+> "company" : "HYUNDAI",
+> "year" : 2019
+> }
+
+> db.car.find().sort({name:1});
+{ "_id" : ObjectId("61a81c5d64c0f24bc9bbabab"), "name" : "BMW", "price" : 3000, "company" : "BMW", "year" : 2017 }
+{ "_id" : ObjectId("61a81c5f64c0f24bc9bbabac"), "name" : "K7", "price" : 3000, "company" : "KIA", "year" : 2020 }
+{ "_id" : ObjectId("61a81bf164c0f24bc9bbaba9"), "name" : "SM5", "price" : 1000, "company" : "SAMSUNG", "year" : 2013 }
+{ "_id" : ObjectId("61a81c5d64c0f24bc9bbabaa"), "name" : "SONATA", "price" : 2000, "company" : "HYUNDAI", "year" : 2019 }
+
+> db.car.find().sort({name:-1});
+{ "_id" : ObjectId("61a81c5d64c0f24bc9bbabaa"), "name" : "SONATA", "price" : 2000, "company" : "HYUNDAI", "year" : 2019 }
+{ "_id" : ObjectId("61a81bf164c0f24bc9bbaba9"), "name" : "SM5", "price" : 1000, "company" : "SAMSUNG", "year" : 2013 }
+{ "_id" : ObjectId("61a81c5f64c0f24bc9bbabac"), "name" : "K7", "price" : 3000, "company" : "KIA", "year" : 2020 }
+{ "_id" : ObjectId("61a81c5d64c0f24bc9bbabab"), "name" : "BMW", "price" : 3000, "company" : "BMW", "year" : 2017 }
+
+
+db.car.update({name:'K7'},{$set:{price: 1000}},false,false)
+> db.car.find();
+{ "_id" : ObjectId("61a81bf164c0f24bc9bbaba9"), "name" : "SM5", "price" : 1000, "company" : "SAMSUNG", "year" : 2013 }
+{ "_id" : ObjectId("61a81c5d64c0f24bc9bbabaa"), "name" : "SONATA", "price" : 2000, "company" : "HYUNDAI", "year" : 2019 }
+{ "_id" : ObjectId("61a81c5d64c0f24bc9bbabab"), "name" : "BMW", "price" : 3000, "company" : "BMW", "year" : 2017 }
+{ "_id" : ObjectId("61a81c5f64c0f24bc9bbabac"), "name" : "K7", "price" : 1000, "company" : "KIA", "year" : 2020 }
+
+
+db.car.remove({price:{$lte:1000}});
+> db.car.find();
+{ "_id" : ObjectId("61a81c5d64c0f24bc9bbabaa"), "name" : "SONATA", "price" : 2000, "company" : "HYUNDAI", "year" : 2019 }
+{ "_id" : ObjectId("61a81c5d64c0f24bc9bbabab"), "name" : "BMW", "price" : 3000, "company" : "BMW", "year" : 2017 }
+
+> db.createCollection('newCar');
+
+db.car.drop();
+
+
